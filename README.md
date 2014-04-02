@@ -1,4 +1,4 @@
 LeftVsBi
 ========
 
-Timing a min leftist tree vs binomial heap.
+Tiem test: min leftist tree vs binomial heap.
