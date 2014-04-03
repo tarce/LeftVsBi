@@ -1,0 +1,5 @@
+#program specific files
+Debug/
+.gitignore~
+.cproject
+.project
