@@ -132,14 +132,14 @@ void Queue<T>::push(const T& theElement) {
 			copy(queue, queue + end + 1, newQueue + length - front);
 		}
 
-		//set correct values for start, end, length and queue
+		// set correct values for start, end, length and queue
 		start = 2 * length - 1;
 		end = length - 2;
 		length *= 2;
 		queue = newQueue;
 	}
 
-	//push the element into position
+	// push the element into position
 	end = (end + 1) % length;
 	queue[end] = theElement;
 }
