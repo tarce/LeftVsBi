@@ -1,9 +1,10 @@
 //============================================================================
-// Name        : test.cpp
-// Author      : 
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Name        : LeftVsBi.cpp
+// Author      : Terek Arce
+// Version     : 1.0
+// Created     : Apr 3, 2014
+// Copyright   : See MIT Liscence
+// Description : LeftVsBi, a timing of min leftist tree Vs binomial heap
 //============================================================================
 
 #include <iostream>
@@ -14,10 +15,14 @@ using namespace std;
 int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
-	Queue<int> q (5);
-
-	q.push(1);
-	int result = q.front();
-
-	cout << result;
+	try {
+		Queue<int> q (0);
+		q.push(1);
+		int result = q.front();
+		cout << result;
+	}
+	catch (Exception& e){
+		cout << "Exception caught: ";
+		e.outputMessage() ;
+	}
 }

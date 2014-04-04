@@ -1,47 +1,52 @@
-/*
- * Queue.h
- *
- *  Created on: Apr 3, 2014
- *      Author: terek
- */
+//============================================================================
+// Name        : Queue.h
+// Author      : Terek Arce
+// Version     : 1.0
+// Created     : Apr 3, 2014
+// Copyright   : See MIT Liscence
+// Description : Queue, a simple circular queue founded on an array.
+//============================================================================
+
 
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
 #include <sstream>
-
-#include "myExceptions.h"
+#include "Exceptions.h"
 
 using namespace std;
 
-//circular queue based on array
-//much of the code came from undergrad project
 template<class T>
-class Queue
-{
-   public:
+class Queue {
 
-	   Queue(int initialCapacity = 10);
-      ~Queue();
-      bool empty() const;
-      T& front();
-      void pop();
-      void push(const T& theElement);
-   private:
-      int theFront;
-      int theBack;
-      int arrayLength;
-      T *queue;
+public:
+	Queue(int initialCapacity = 10);
+	~Queue();
+	bool empty() const;
+	T& front();
+	void pop();
+	void push(const T& theElement);
+
+private:
+	int theFront;
+	int theBack;
+	int arrayLength;
+	T *queue;
 };
 
+/*
+ * Constructs a queue.  The default initial capacity is 10.
+ * Throws illegalParameter for initial capacities less than 1.
+ *
+ */
 template<class T>
-Queue<T>::Queue(int initialCapacity) {
-	if (initialCapacity < 1){
-		ostringstream s;
-		s << "Initial capacity = " << initialCapacity << " Must be > 0";
-		throw illegalParameterValue(s.str());
+Queue<T>::Queue(int capacity) {
+	if (capacity < 1){
+		ostringstream error;
+		error << "capacity set to " << capacity << "; must be > 0.";
+		throw Exception(error.str());
 	}
-	arrayLength = initialCapacity;
+	arrayLength = capacity;
 	queue = new T[arrayLength];
 	theFront = 0;
 	theBack = 0;
@@ -59,15 +64,21 @@ bool Queue<T>::empty() const {
 
 template<class T>
 T& Queue<T>::front() {
-	if (theFront == theBack)
-		throw queueEmpty();
+	if (empty()) {
+		ostringstream error;
+		error << "tried to front() from empty queue.";
+		throw Exception(error.str());
+	}
 	return queue[(theFront + 1) % arrayLength];
 }
 
 template<class T>
 void Queue<T>::pop() {
-	if (theFront == theBack)
-		throw queueEmpty();
+	if (empty()) {
+		ostringstream error;
+		error << "tried to pop() from empty queue.";
+		throw Exception(error.str());
+	}
 	theFront = (theFront + 1) % arrayLength;
 	queue[theFront].~T();
 }
