@@ -16,7 +16,7 @@ int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 
 	try {
-		Queue<int> q (0);
+		Queue<int> q (1);
 		q.push(1);
 		int result = q.front();
 		cout << result;
