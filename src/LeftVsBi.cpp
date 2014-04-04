@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include "Queue.h"
+#include "BinaryTreeNode.h"
 
 using namespace std;
 
