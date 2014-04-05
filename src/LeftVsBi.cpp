@@ -8,23 +8,55 @@
 //============================================================================
 
 #include <iostream>
+#include <fstream>
+//#include <sstream>
+//#include <string>
+//#include <time.h>
 #include "Queue.h"
 #include "MinHBLT.h"
 
-using namespace std;
+//using namespace std;
 
-int main() {
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+int main(int argc, char *argv[], char *envp[]) {
 
-	try {
-		Queue<int> q (1);
-		q.push(1);
-		int result = q.front();
-		cout << result;
+	string file;
+	ifstream myfile;
+	string arg = argv[1];
+	MinHBLT<int> leftistTree;
+
+	if (arg == "-il") {
+		file = argv[2];
+		myfile.open(file.c_str());//NOTE:c_str() used to conform w/ g++
+		bool start = true;
+		while (myfile.is_open() && myfile.good()) {
+
+			string line;
+			getline (myfile,line);
+			istringstream first_line(line);
+			string first_char;
+			first_line >> first_char;
+			if (first_char == "I" && start) {
+				int key;
+				first_line >> key;
+				int init[2] = {0, key};
+				leftistTree.initialize(init, 1);
+				start = false;
+			}
+			else if (first_char == "I"){
+				int key;
+				first_line >> key;
+				leftistTree.push(key);
+			}
+			else if (first_char == "D") {
+				try {leftistTree.pop();}
+				catch (Exception& e) {
+					//e.outputMessage();
+				}
+			}
+			else {break;}
+		}
+		//print final tree
+		leftistTree.print();
 	}
-	catch (Exception& e){
-		cout << "Exception caught: ";
-		e.outputMessage() ;
-	}
-
+	myfile.close();
 }

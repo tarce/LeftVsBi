@@ -18,8 +18,8 @@
 template<class E>
 class MinHBLT {
 public:
-	MinHBLTnode<pair<int,E> > *root;	// pointer to root
-	int treeSize;	// number of nodes in tree
+	MinHBLTnode<pair<int,E> > *root;
+	int treeSize;
 
 	MinHBLT();
 	~MinHBLT();
@@ -129,31 +129,31 @@ void MinHBLT<E>::pop() {
  * See: http://en.wikipedia.org/wiki/Leftist_tree#Merging_height_biased_leftist_trees
  */
 template<class E>
-void MinHBLT<E>::meld(MinHBLTnode<pair<int, E> >* &root1,
-                      MinHBLTnode<pair<int, E> >* &root2) {
+void MinHBLT<E>::meld(MinHBLTnode<pair<int, E> >* &root,
+                      MinHBLTnode<pair<int, E> >* &newNode) {
 
 	// cases where one tree or the other is empty
-	if (root2 == NULL) {return;}
-	if (root1 == NULL) {root1=root2; return;}
+	if (newNode == NULL) {return;}
+	if (root == NULL) {root=newNode; return;}
 
 	// if needed, swap root1 and root2 so as to maintain min property
-	if (root1->element.second > root2->element.second) {
-		swap(root1, root2);
+	if (root->element.second > newNode->element.second) {
+		swap(root, newNode);
 	}
 
-	meld(root1->rightChild, root2);
+	meld(root->rightChild, newNode);
 
 	// check s-values and swap if necessary, updating s-values
-	if (root1->leftChild == NULL) {
-		root1->leftChild = root1->rightChild;
-		root1->rightChild = NULL;
-		root1->element.first = 1;
+	if (root->leftChild == NULL) {
+		root->leftChild = root->rightChild;
+		root->rightChild = NULL;
+//		root->element.first = 1;
 	}
 	else {
-		if (root1->leftChild->element.first < root1->rightChild->element.first) {
-			swap(root1->leftChild, root1->rightChild);
+		if (root->leftChild->element.first < root->rightChild->element.first) {
+			swap(root->leftChild, root->rightChild);
 		}
-		root1->element.first = root1->rightChild->element.first + 1;
+		root->element.first = root->rightChild->element.first + 1;
 	}
 }
 
@@ -202,7 +202,7 @@ void MinHBLT<E>::postOrder(MinHBLTnode<pair<int,E> > *t) {
 template <class E>
 void MinHBLT<E>::print() {
 	levelOrder(printElement);
-	cout << endl;		//TODO: is this necessary?
+//	cout << endl;		//TODO: is this necessary?
 }
 
 /*
@@ -219,7 +219,7 @@ void MinHBLT<E>::printElement(MinHBLTnode<pair<int,E> > *t) {
 template <class E>
 void MinHBLT<E>::levelOrder(void(*theVisit)(MinHBLTnode<pair<int,E> > *)) {
 
-	cout << endl;
+//	cout << endl;
 
 	int nodesCurrentLevel = 1;
 	int nodesNextLevel = 0;
