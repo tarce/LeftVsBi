@@ -1,9 +1,11 @@
-/*
- * BinaryTree.h
- *
- *  Created on: Apr 4, 2014
- *      Author: terek
- */
+//============================================================================
+// Name        : MinHBLT.h
+// Author      : Terek Arce
+// Version     : 1.0
+// Created     : Apr 5, 2014
+// Copyright   : See MIT Liscence
+// Description : MinHBLT, a minimum height biased leftist tree.
+//============================================================================
 
 #ifndef MINHBLT_H_
 #define MINHBLT_H_
@@ -21,21 +23,20 @@ public:
 
 	MinHBLT();
 	~MinHBLT();
+	void initialize(E *, int);
+	void push(const E&);
+	void pop();
 	void erase();
 	void print();
 	void postOrder(void(*)(MinHBLTnode<pair<int,E> >*));
 	void levelOrder(void(*)(MinHBLTnode<pair<int,E> > *));
-	void pop();
-	void push(const E&);
-	void initialize(E *, int);
 
 protected:
-	//TODO: visit????
-	static void (*visit)(MinHBLTnode<pair<int,E> >*);
-	static void postOrder(MinHBLTnode<pair<int,E> > *);
+	void meld(MinHBLTnode<pair<int,E> >* &, MinHBLTnode<pair<int,E> >* &);
 	static void destroy(MinHBLTnode<pair<int,E> > *);
 	static void printElement(MinHBLTnode<pair<int,E> > *);
-	void meld(MinHBLTnode<pair<int,E> >* &, MinHBLTnode<pair<int,E> >* &);
+	static void postOrder(MinHBLTnode<pair<int,E> > *);
+	static void (*visit)(MinHBLTnode<pair<int,E> >*);
 };
 
 template <class E>
@@ -59,7 +60,105 @@ MinHBLT<E>::~MinHBLT() {
 }
 
 /*
- * Erases the entire binary tree.
+ * Initializes a min height biased leftist tree using a queue in O(n) time.
+ * See: http://en.wikipedia.org/wiki/Leftist_tree#Initializing_a_height_biased_leftist_tree
+ */
+template<class E>
+void MinHBLT<E>::initialize(E* elements, int size) {
+
+	Queue<MinHBLTnode<pair<int,E> >*> q(size);
+	erase();
+
+	// put all the elements in the queue
+	for (int i = 1; i <= size; i++) {
+		q.push(new MinHBLTnode<pair<int,E> > (pair<int,E>(1, elements[i])));
+	}
+
+	// pop 2 trees from the queue and meld them
+	// then push the result back on queue
+	// continue till done
+	for (int i = 1; i <= size - 1; i++) {
+		MinHBLTnode<pair<int,E> > *first = q.front();
+		q.pop();
+		MinHBLTnode<pair<int,E> > *second = q.front();
+		q.pop();
+		meld(first, second);
+		q.push(first);
+	}
+
+	// set the root if the tree is not empty
+	if (size > 0)
+		root = q.front();
+	treeSize = size;
+}
+
+/*
+ * Push an element into the tree.
+ */
+template<class E>
+void MinHBLT<E>::push(const E& element) {
+	MinHBLTnode<pair<int,E> > *q = new MinHBLTnode<pair<int,E> > (pair<int,E> (1, element));
+	meld(root,q);
+	treeSize++;
+}
+
+/*
+ * Pops the top/min element from the tree.
+ */
+template<class E>
+void MinHBLT<E>::pop() {
+	if (root == NULL) {
+		ostringstream error;
+		error << "tried to pop() from empty tree.";
+		throw Exception(error.str());
+	}
+
+	// create left and right subtrees
+	MinHBLTnode<pair<int,E> > *left = root->leftChild;
+	MinHBLTnode<pair<int,E> > *right = root->rightChild;
+
+	// delete and remeld
+	delete root;
+	root = left;
+	meld(root, right);
+	treeSize--;
+}
+
+/*
+ * Melds to min HBLT trees together.
+ * See: http://en.wikipedia.org/wiki/Leftist_tree#Merging_height_biased_leftist_trees
+ */
+template<class E>
+void MinHBLT<E>::meld(MinHBLTnode<pair<int, E> >* &root1,
+                      MinHBLTnode<pair<int, E> >* &root2) {
+
+	// cases where one tree or the other is empty
+	if (root2 == NULL) {return;}
+	if (root1 == NULL) {root1=root2; return;}
+
+	// if needed, swap root1 and root2 so as to maintain min property
+	if (root1->element.second > root2->element.second) {
+		swap(root1, root2);
+	}
+
+	meld(root1->rightChild, root2);
+
+	// check s-values and swap if necessary, updating s-values
+	if (root1->leftChild == NULL) {
+		root1->leftChild = root1->rightChild;
+		root1->rightChild = NULL;
+		root1->element.first = 1;
+	}
+	else {
+		if (root1->leftChild->element.first < root1->rightChild->element.first) {
+			swap(root1->leftChild, root1->rightChild);
+		}
+		root1->element.first = root1->rightChild->element.first + 1;
+	}
+}
+
+/*
+ * Erases the entire HBLT tree.
  */
 template <class E>
 void MinHBLT<E>::erase(){
@@ -98,7 +197,7 @@ void MinHBLT<E>::postOrder(MinHBLTnode<pair<int,E> > *t) {
 }
 
 /*
- * Prints the binary tree in level order.
+ * Prints the tree in level order.
  */
 template <class E>
 void MinHBLT<E>::print() {
@@ -120,7 +219,7 @@ void MinHBLT<E>::printElement(MinHBLTnode<pair<int,E> > *t) {
 template <class E>
 void MinHBLT<E>::levelOrder(void(*theVisit)(MinHBLTnode<pair<int,E> > *)) {
 
-	cout << endl;	//TODO: is this necessary?
+	cout << endl;
 
 	int nodesCurrentLevel = 1;
 	int nodesNextLevel = 0;
@@ -128,7 +227,7 @@ void MinHBLT<E>::levelOrder(void(*theVisit)(MinHBLTnode<pair<int,E> > *)) {
 	MinHBLTnode<pair<int,E> > *temp = root;
 
 	while (temp != NULL) {
-		theVisit(temp);  // visit t
+		theVisit(temp);
 
 		// put temp's children on q
 		if (temp->leftChild != NULL) {
@@ -147,87 +246,13 @@ void MinHBLT<E>::levelOrder(void(*theVisit)(MinHBLTnode<pair<int,E> > *)) {
 		q.pop();
 		nodesCurrentLevel--;
 
-		//determine if on next level
+		// determine if you should move on to next level
 		if (nodesCurrentLevel == 0) {
 			cout << endl;
 			nodesCurrentLevel = nodesNextLevel;
 			nodesNextLevel = 0;
 		}
 	}
-}
-
-template<class E>
-void MinHBLT<E>::pop() {
-	if (this->root == NULL) {throw Exception();}
-
-	//create left and right subtrees
-	MinHBLTnode<pair<int,E> > *left = this->root->leftChild, *right = this->root->rightChild;
-
-	//delete and remeld
-	delete this->root;
-	this->root = left;
-	meld(this->root, right);
-	(this->treeSize)--;
-}
-
-template<class E>
-void MinHBLT<E>::push(const E& theElement) {
-
-	//create single node
-	MinHBLTnode<pair<int,E> > *q = new MinHBLTnode<pair<int,E> > (pair<int,E>(1, theElement));
-
-	// meld with this
-	meld(this->root,q);
-	this->treeSize++;
-}
-
-template<class E>
-void MinHBLT<E>::meld(MinHBLTnode<pair<int, E> >* &x, MinHBLTnode<pair<int, E> >* &y) {
-
-	//cases where one tree or the other is empty
-	if (y == NULL) {return;}
-	if (x == NULL) {x=y; return;}
-
-	//swap x and y if as to maintain min property
-	if (x->element.second > y->element.second) {swap(x, y);}		//NOTE: this seemed wrong in the wiki, change sign direction
-
-	meld(x->rightChild,y);
-
-	//check s-values and swap if necessary, updating s-values
-	if (x->leftChild == NULL) {
-		x->leftChild = x->rightChild;
-		x->rightChild = NULL;
-		x->element.first = 1;
-	}
-	else {
-		if (x->leftChild->element.first < x->rightChild->element.first) {swap(x->leftChild, x->rightChild);}
-		x->element.first = x->rightChild->element.first + 1;
-	}
-}
-
-template<class E>
-void MinHBLT<E>::initialize(E* theElements, int theSize) {
-	Queue<MinHBLTnode<pair<int,E> >*> q(theSize);
-	this->erase();  // make *this empty
-
-	// init queue of tree
-	for (int i = 1; i <= theSize; i++) {q.push(new MinHBLTnode<pair<int,E> > (pair<int,E>(1, theElements[i])));}
-
-	//meld from queue and push back on queue, continue till done
-	for (int i = 1; i <= theSize - 1; i++) {
-		MinHBLTnode<pair<int,E> > *first = q.front();
-		q.pop();
-		MinHBLTnode<pair<int,E> > *second = q.front();
-		q.pop();
-		meld(first, second);
-		q.push(first);
-	}
-
-	//determine min
-	if (theSize > 0)
-		this->root = q.front();
-
-	this->treeSize = theSize;
 }
 
 #endif /* MINHBLT_H_ */
