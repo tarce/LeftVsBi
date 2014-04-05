@@ -16,7 +16,7 @@
 template <class T>
 struct BinaryTreeNode {
 
-	T element;						// the element stored in the tree
+	T element;	// the element stored in the tree
 	BinaryTreeNode<T> *leftChild;	// pointer to left subtree
 	BinaryTreeNode<T> *rightChild;  // pointer to right subtree
 
