@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include "Queue.h"
-#include "BinaryTreeNode.h"
+#include "MinHBLT.h"
 
 using namespace std;
 
@@ -26,4 +26,5 @@ int main() {
 		cout << "Exception caught: ";
 		e.outputMessage() ;
 	}
+
 }
