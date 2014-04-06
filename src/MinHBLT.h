@@ -125,7 +125,7 @@ void MinHBLT<E>::pop() {
 }
 
 /*
- * Melds to min HBLT trees together.
+ * Melds two min HBLT trees together.
  * See: http://en.wikipedia.org/wiki/Leftist_tree#Merging_height_biased_leftist_trees
  */
 template<class E>
