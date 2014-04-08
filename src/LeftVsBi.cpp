@@ -14,6 +14,7 @@
 //#include <time.h>
 #include "Queue.h"
 #include "MinHBLT.h"
+#include "BinomialHeap.h"
 
 //using namespace std;
 
@@ -23,6 +24,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	ifstream myfile;
 	string arg = argv[1];
 	MinHBLT<int> leftistTree;
+	BinomialHeap<int> heap;
 
 	if (arg == "-il") {
 		file = argv[2];
@@ -71,31 +73,21 @@ int main(int argc, char *argv[], char *envp[]) {
 			string first_char;
 			first_line >> first_char;
 
-			BinomialHeap<int> heap;
-
 			if (first_char == "I") {
 				int key;
 				first_line >> key;
 				heap.push(key);
 			}
 			else if (first_char == "D") {
-				try {heap.removeMin()}
+				try {heap.removeMin();}
 				catch (Exception& e) {
 					//e.outputMessage();
 				};
 			}
-			else {
-				break;
-			}
+			else {break;}
 		}
 		//print final heap
-		binomialHeap.levelOrderOutput(binomialHeap.min);										//TODO: change so no params
-			}
-			else {cout << "Error: must start with insert into heap" << endl;}
-		}
-		else {cout << "Error: could not open/read file." << endl;}
+		heap.print();
 	}
-
-
 	myfile.close();
 }

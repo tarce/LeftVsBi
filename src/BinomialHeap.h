@@ -20,7 +20,7 @@ public:
 	BinomialHeap();
 	~BinomialHeap();
 	void push(const T&);
-	const T& removeMin();
+	void removeMin();
 	void print();
 	void levelOrderOutput();
 	void levelOrder(void(*)(BinomialHeapNode<T> *));
@@ -51,7 +51,6 @@ void BinomialHeap<T>::push(const T& element) {
 
 	BinomialHeapNode<T> *new_node = new BinomialHeapNode<T> (element);
 
-	//if heap is empty add node, otherwise add to top level list
 	if (min == NULL) {
 		min = new_node;
 		new_node->sibling = new_node;
@@ -76,7 +75,7 @@ BinomialHeapNode<T> * BinomialHeap<T>::meld(BinomialHeapNode<T> * &min1, Binomia
 
 //remove min from binomial heap
 template <class T>
-const T& BinomialHeap<T>::removeMin() {
+void BinomialHeap<T>::removeMin() {
 
 	if (min == NULL) {
 		ostringstream error;
@@ -84,7 +83,6 @@ const T& BinomialHeap<T>::removeMin() {
 		throw Exception(error.str());
 	}
 
-	T minValue = min->element;
 	BinomialHeapNode<T> *tempChild = min->child;
 
 	//need to create binomialHeaps and add to top level list
@@ -112,16 +110,15 @@ const T& BinomialHeap<T>::removeMin() {
 			min = pairWiseCombine(min);
 		}
 	}
-	//only top level circular list
 	else {
 		if (min != min->sibling) {
 			min->copy(min->sibling);
 			min = pairWiseCombine(min);
 		}
-		else {cout << "Warning: Binomial heap is now empty!" << endl;}
+		else {
+			min = NULL;
+		}
 	}
-
-	return minValue;
 }
 
 //performs pairwise combine of binomial heaps
