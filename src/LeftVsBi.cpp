@@ -26,7 +26,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	if (arg == "-il") {
 		file = argv[2];
-		myfile.open(file.c_str());//NOTE:c_str() used to conform w/ g++
+		myfile.open(file.c_str());
 		bool start = true;
 		while (myfile.is_open() && myfile.good()) {
 
@@ -58,5 +58,44 @@ int main(int argc, char *argv[], char *envp[]) {
 		//print final tree
 		leftistTree.print();
 	}
+
+	else if (arg == "-ib") {
+		file = argv[2];
+		myfile.open(file.c_str());
+		bool start = true;
+		while (myfile.is_open() && myfile.good()) {
+
+			string line;
+			getline (myfile,line);
+			istringstream first_line(line);
+			string first_char;
+			first_line >> first_char;
+
+			BinomialHeap<int> heap;
+
+			if (first_char == "I") {
+				int key;
+				first_line >> key;
+				heap.push(key);
+			}
+			else if (first_char == "D") {
+				try {heap.removeMin()}
+				catch (Exception& e) {
+					//e.outputMessage();
+				};
+			}
+			else {
+				break;
+			}
+		}
+		//print final heap
+		binomialHeap.levelOrderOutput(binomialHeap.min);										//TODO: change so no params
+			}
+			else {cout << "Error: must start with insert into heap" << endl;}
+		}
+		else {cout << "Error: could not open/read file." << endl;}
+	}
+
+
 	myfile.close();
 }

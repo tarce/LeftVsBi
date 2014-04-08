@@ -77,6 +77,13 @@ BinomialHeapNode<T> * BinomialHeap<T>::meld(BinomialHeapNode<T> * &min1, Binomia
 //remove min from binomial heap
 template <class T>
 const T& BinomialHeap<T>::removeMin() {
+
+	if (min == NULL) {
+		ostringstream error;
+		error << "tried to removeMin() from empty tree.";
+		throw Exception(error.str());
+	}
+
 	T minValue = min->element;
 	BinomialHeapNode<T> *tempChild = min->child;
 
@@ -247,7 +254,7 @@ void BinomialHeap<T>::levelOrderOutput() {
 		start = start->sibling;
 	}
 
-	while(parents.empty() != true) {
+	while(!parents.empty()) {
 
 		//remove parents from queue, printing them and adding their children to children queue
 		while (!parents.empty()){
@@ -289,7 +296,7 @@ void BinomialHeap<T>::levelOrder(void(*theVisit)(BinomialHeapNode<T> *)) {
 		start = start->sibling;
 	}
 
-	while(parents.empty() != true) {
+	while(!parents.empty()) {
 
 		//remove parents from queue, printing them and adding their children to children queue
 		while (!parents.empty()){
