@@ -24,7 +24,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	ifstream myfile;
 	string arg = argv[1];
 	MinHBLT<int> leftistTree;
-	BinomialHeap<int> heap;
+	BinomialHeap<int> heap (14); // Note that the default constructor set to 14.
 
 	if (arg == "-il") {
 		file = argv[2];
