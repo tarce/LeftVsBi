@@ -22,9 +22,7 @@ public:
 	void push(const T&);
 	void removeMin();
 	void print();
-	void levelOrderOutput();
 	void levelOrder(void(*)(BinomialHeapNode<T> *));
-
 
 protected:
 	BinomialHeapNode<T> * meld(BinomialHeapNode<T> * &, BinomialHeapNode<T> * &);
@@ -237,55 +235,12 @@ BinomialHeapNode<T> * BinomialHeap<T>::pairWiseCombine(BinomialHeapNode<T> *node
 }
 
 template<class T>
-void BinomialHeap<T>::levelOrderOutput() {
-
-	Queue<BinomialHeapNode<T>*> parents;
-	Queue<BinomialHeapNode<T>*> children;
-	BinomialHeapNode<T> * start;
-
-	//push min and min's siblings on the parents queue
-	parents.push(min);
-	start = min->sibling;
-	while (start != min) {
-		parents.push(start);
-		start = start->sibling;
-	}
-
-	while(!parents.empty()) {
-
-		//remove parents from queue, printing them and adding their children to children queue
-		while (!parents.empty()){
-			BinomialHeapNode<T> * temp = parents.front();
-			if (temp->child != NULL) {
-				BinomialHeapNode<T> * childStart = temp->child->sibling;
-				children.push(temp->child);
-				while (childStart != temp->child) {
-					children.push(childStart);
-					childStart = childStart->sibling;
-				}
-			}
-			//theVisit(temp);
-			cout << temp->element << " ";
-			parents.pop();
-		}
-		cout << endl;
-		//at this point parents is empty
-		//push children onto parents
-		while (!children.empty()) {
-			parents.push(children.front());
-			children.pop();
-		}
-	}
-}
-
-template<class T>
 void BinomialHeap<T>::levelOrder(void(*theVisit)(BinomialHeapNode<T> *)) {
 
 	Queue<BinomialHeapNode<T>*> parents;
 	Queue<BinomialHeapNode<T>*> children;
 	BinomialHeapNode<T> * start;
 
-	//push min and min's siblings on the parents queue
 	parents.push(min);
 	start = min->sibling;
 	while (start != min) {
@@ -294,8 +249,6 @@ void BinomialHeap<T>::levelOrder(void(*theVisit)(BinomialHeapNode<T> *)) {
 	}
 
 	while(!parents.empty()) {
-
-		//remove parents from queue, printing them and adding their children to children queue
 		while (!parents.empty()){
 			BinomialHeapNode<T> * temp = parents.front();
 			if (temp->child != NULL) {
@@ -307,12 +260,9 @@ void BinomialHeap<T>::levelOrder(void(*theVisit)(BinomialHeapNode<T> *)) {
 				}
 			}
 			theVisit(temp);
-			//cout << temp->element << " ";
 			parents.pop();
 		}
 		cout << endl;
-		//at this point parents is empty
-		//push children onto parents
 		while (!children.empty()) {
 			parents.push(children.front());
 			children.pop();
@@ -323,7 +273,6 @@ void BinomialHeap<T>::levelOrder(void(*theVisit)(BinomialHeapNode<T> *)) {
 template <class T>
 void BinomialHeap<T>::print() {
 	levelOrder(printElement);
-//	cout << endl;		//TODO: is this necessary?
 }
 
 template <class T>
