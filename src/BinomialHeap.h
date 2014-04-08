@@ -25,8 +25,8 @@ public:
 	void levelOrder(void(*)(BinomialHeapNode<T> *));
 
 protected:
-	BinomialHeapNode<T> * meld(BinomialHeapNode<T> * &, BinomialHeapNode<T> * &);
-	BinomialHeapNode<T> * pairWiseCombine(BinomialHeapNode<T> *);
+	void meld(BinomialHeapNode<T> * &);
+	BinomialHeapNode<T> * pairWiseCombine();
 	static void (*visit)(BinomialHeapNode<T> *);
 	static void printElement(BinomialHeapNode<T> *);
 };
@@ -34,6 +34,9 @@ protected:
 template <class T>
 void (*BinomialHeap<T>::visit)(BinomialHeapNode<T> *);
 
+/*
+ * Constructor.
+ */
 template<class T>
 BinomialHeap<T>::BinomialHeap() {
 	min = NULL;
@@ -44,6 +47,10 @@ BinomialHeap<T>::~BinomialHeap() {
 	//TODO:
 }
 
+/*
+ * Pushes an element into the binomial heap (top level list).
+ * Also determines new min if necessary.
+ */
 template<class T>
 void BinomialHeap<T>::push(const T& element) {
 
@@ -61,17 +68,10 @@ void BinomialHeap<T>::push(const T& element) {
 	}
 }
 
-//melds 2 top level lists, returnin min (assumes min are coming in)
-template<class T>
-BinomialHeapNode<T> * BinomialHeap<T>::meld(BinomialHeapNode<T> * &min1, BinomialHeapNode<T> * &min2) {
-	BinomialHeapNode<T> *temp = min1->sibling;
-	min1->sibling = min2->sibling;
-	min2->sibling = temp;
-	if (min1->element < min2->element) {return min1;}
-	else {return min2;}
-}
-
-//remove min from binomial heap
+/*
+ * Removes the minimum from the binomial heap.
+ * This operation melds and combines the trees in to one tree.
+ */
 template <class T>
 void BinomialHeap<T>::removeMin() {
 
@@ -83,47 +83,70 @@ void BinomialHeap<T>::removeMin() {
 
 	BinomialHeapNode<T> *tempChild = min->child;
 
-	//need to create binomialHeaps and add to top level list
+	// case where min has children
 	if (tempChild != NULL) {
+
+		// find the smallest child
 		BinomialHeapNode<T> *start = tempChild;
 		BinomialHeapNode<T> *curSmallest = tempChild;
-
 		while (tempChild->sibling != start) {
 			//find smallest element in child list
-			if (tempChild->sibling->element < curSmallest->element) {curSmallest = tempChild->sibling;}
+			if (tempChild->sibling->element < curSmallest->element) {
+				curSmallest = tempChild->sibling;
+			}
 			tempChild = tempChild->sibling;
 		}
 
-		//set child to be the min of new top level list;
-		tempChild = curSmallest;
-
-		//do copy back trick and meld
+		// meld the new tree with the other top level trees and combine
 		if (min != min->sibling) {
-			min->copy(min->sibling);
-			min = meld(min, tempChild);
-			min = pairWiseCombine(min);
+			min->copy(min->sibling); //copy back trick
+			meld(curSmallest);
+			min = pairWiseCombine();
 		}
+		// only one top level, so combine the new top level trees
 		else {
-			min = tempChild;
-			min = pairWiseCombine(min);
+			min = curSmallest;
+			min = pairWiseCombine();
 		}
 	}
+
+	// case where min has no children (only top level list)
 	else {
+		// only one top level, so combine the new top level trees
 		if (min != min->sibling) {
 			min->copy(min->sibling);
-			min = pairWiseCombine(min);
+			min = pairWiseCombine();
 		}
+		// no tree is left so set min back to null
 		else {
 			min = NULL;
 		}
 	}
 }
 
+/*
+ * Melds a new tree with the current top level list pointed to by min.
+ * Also determines a new min if necessary.
+ */
+template<class T>
+void BinomialHeap<T>::meld(BinomialHeapNode<T> * &newTree) {
+
+	// combine lists
+	BinomialHeapNode<T> *temp = min->sibling;
+	min->sibling = newTree->sibling;
+	newTree->sibling = temp;
+
+	// determine new min
+	if (min->element >= newTree->element) {
+		min = newTree;
+	}
+}
+
 //performs pairwise combine of binomial heaps
 template <class T>
-BinomialHeapNode<T> * BinomialHeap<T>::pairWiseCombine(BinomialHeapNode<T> *node)
+BinomialHeapNode<T> * BinomialHeap<T>::pairWiseCombine()
 {
-	BinomialHeapNode<T> *start = node;
+	BinomialHeapNode<T> *start = min;
 	int maxDegree = 14;						//log(5000) = 13 which is max + 1 for safety
 
 	BinomialHeapNode<T> ** pairTable;
@@ -131,10 +154,10 @@ BinomialHeapNode<T> * BinomialHeap<T>::pairWiseCombine(BinomialHeapNode<T> *node
 	for (int i = 0; i < maxDegree; i++) {pairTable[i] = NULL;}
 
 	//break circular list
-	while (start->sibling != node) {start = start->sibling;}
+	while (start->sibling != min) {start = start->sibling;}
 	start->sibling = NULL;
 
-	start = node;
+	start = min;
 	BinomialHeapNode<T> * notInserted = start;
 
 	while (notInserted != NULL) {
