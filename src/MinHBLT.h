@@ -202,7 +202,6 @@ void MinHBLT<E>::postOrder(MinHBLTnode<pair<int,E> > *t) {
 template <class E>
 void MinHBLT<E>::print() {
 	levelOrder(printElement);
-//	cout << endl;		//TODO: is this necessary?
 }
 
 /*

@@ -1,9 +1,11 @@
-/*
- * BinomialHeap.h
- *
- *  Created on: Apr 5, 2014
- *      Author: terek
- */
+//============================================================================
+// Name        : BinomialHeap.h
+// Author      : Terek Arce
+// Version     : 1.0
+// Created     : Apr 8, 2014
+// Copyright   : See MIT Liscence
+// Description : BinomialHeap, a binomial heap.
+//============================================================================
 
 #ifndef BINOMIALHEAP_H_
 #define BINOMIALHEAP_H_
@@ -25,12 +27,14 @@ public:
 	void removeMin();
 	void print();
 	void levelOrder(void(*)(BinomialHeapNode<T> *));
+	void erase();
 
 protected:
 	void meld(BinomialHeapNode<T> * &);
 	void pairWiseCombine();
 	static void (*visit)(BinomialHeapNode<T> *);
 	static void printElement(BinomialHeapNode<T> *);
+	static void destroy(BinomialHeapNode<T> *);
 };
 
 template <class T>
@@ -58,7 +62,7 @@ BinomialHeap<T>::BinomialHeap(int theMaxDegree) {
  */
 template<class T>
 BinomialHeap<T>::~BinomialHeap() {
-	//TODO:
+	erase();
 }
 
 /*
@@ -103,12 +107,14 @@ void BinomialHeap<T>::removeMin() {
 		// find the smallest child
 		BinomialHeapNode<T> *start = tempChild;
 		BinomialHeapNode<T> *curSmallest = tempChild;
+		BinomialHeapNode<T> *cur = tempChild;
 		while (tempChild->sibling != start) {
+			cout << "Entering loop." << endl;
 			//find smallest element in child list
 			if (tempChild->sibling->element < curSmallest->element) {
-				curSmallest = tempChild->sibling;
+				curSmallest = start->sibling;
 			}
-			tempChild = tempChild->sibling;
+			start = start->sibling;
 		}
 
 		// meld the new tree with the other top level trees and combine
@@ -169,7 +175,10 @@ void BinomialHeap<T>::pairWiseCombine()
 
 	// break circular list
 	BinomialHeapNode<T> *b4min = min;
-	while (b4min->sibling != min) {b4min = b4min->sibling;}
+	while (b4min->sibling != min) {
+		cout << "inf2" << endl;
+		b4min = b4min->sibling;
+	}
 	b4min->sibling = NULL;
 
 	// run through each not inserted tree and combine if needed
@@ -338,6 +347,21 @@ void BinomialHeap<T>::print() {
 template <class T>
 void BinomialHeap<T>::printElement(BinomialHeapNode<T> *t) {
 	cout << t->element << ' ';
+}
+
+template <class T>
+void BinomialHeap<T>::erase(){
+	levelOrder(destroy);
+	min = NULL;
+	maxDegree = 0;
+}
+
+/*
+ * Deletes a node.
+ */
+template <class T>
+void BinomialHeap<T>::destroy(BinomialHeapNode<T> *node) {
+	delete node;
 }
 
 #endif /* BINOMIALHEAP_H_ */
